@@ -13,8 +13,8 @@ backend:
     uploadMedia: 'Upload "{{path}}"'
     deleteMedia: 'Delete "{{path}}"'
 
-media_folder: public/images
-public_path: /images
+media_folder: src/assets/images
+public_path: /src/assets/images
 publish_mode: simple
 
 collections:
