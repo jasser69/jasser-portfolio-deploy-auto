@@ -1,12 +1,11 @@
 # Decap CMS Configuration
-# Per usare il CMS:
-# 1. Deploy su Netlify
-# 2. Abilita "Identity" e "Git Gateway" nelle impostazioni Netlify
-# 3. Invita utenti via Netlify Identity
+# Backend: GitHub Direct (non richiede Netlify)
 
 backend:
-  name: git-gateway
+  name: github
+  repo: jasser69/jasser-portfolio-deploy-auto
   branch: main
+  auth_endpoint: api/auth
   commit_messages:
     create: 'Create {{collection}} "{{slug}}"'
     update: 'Update {{collection}} "{{slug}}"'
@@ -14,14 +13,9 @@ backend:
     uploadMedia: 'Upload "{{path}}"'
     deleteMedia: 'Delete "{{path}}"'
 
-# Per sviluppo locale (sostituisci il backend sopra con questo):
-# backend:
-#   name: proxy
-#   proxy_url: http://localhost:8081/api/v1
-
 media_folder: public/images
 public_path: /images
-publish_mode: editorial_workflow
+publish_mode: simple
 
 collections:
   - name: projects
