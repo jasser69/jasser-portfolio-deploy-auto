@@ -1,5 +1,5 @@
 # Decap CMS Configuration
-# Backend: GitHub Direct (non richiede Netlify)
+# Backend: GitHub OAuth per Vercel
 
 backend:
   name: github
@@ -16,6 +16,10 @@ backend:
 media_folder: src/assets/images
 public_path: /src/assets/images
 publish_mode: simple
+
+# Disabilita Netlify Identity
+site_url: https://jasser-portfolio-deploy.vercel.app
+logo_url: https://jasser-portfolio-deploy.vercel.app/favicon.svg
 
 collections:
   - name: projects
