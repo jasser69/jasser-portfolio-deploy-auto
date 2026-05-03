@@ -47,7 +47,7 @@ const emojis: Record<string, string> = {
 };
 ---
 
-<section id="projects" class="py-20" style="background: var(--color-bg-secondary);">
+<section id="projects" class="py-20 relative">
   <div class="max-w-7xl mx-auto px-6">
 
     <div class="mb-16 text-center">
@@ -58,11 +58,11 @@ const emojis: Record<string, string> = {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-      {allProjects.map(project => (
-        <div class="group card hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer">
-          <div class="h-48 rounded-lg mb-4 flex items-center justify-center overflow-hidden"
-               style="background: linear-gradient(135deg, rgba(0,113,227,0.2) 0%, rgba(0,113,227,0.05) 100%);">
-            <div class="text-6xl group-hover:scale-110 transition-transform duration-300">
+      {allProjects.map((project, idx) => (
+        <div class="group card hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer" style={`animation-delay: ${idx * 0.1}s; animation: fadeInUp 0.6s ease-out forwards;`}>
+          <div class="h-48 rounded-2xl mb-4 flex items-center justify-center overflow-hidden glassmorphism"
+               style="background: linear-gradient(135deg, rgba(0,113,227,0.15) 0%, rgba(0,113,227,0.05) 100%);">
+            <div class="text-6xl group-hover:scale-125 transition-transform duration-300">
               {emojis[project!.category as string] ?? '💡'}
             </div>
           </div>
