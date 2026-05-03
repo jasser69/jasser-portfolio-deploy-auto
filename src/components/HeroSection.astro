@@ -1,0 +1,144 @@
+---
+import ToothModel from './ToothModel.jsx';
+import settings from '../data/settings.json';
+---
+
+<section class="relative min-h-screen pt-20 pb-20 overflow-hidden flex items-center justify-center">
+  <!-- Background gradient blobs -->
+  <div class="absolute inset-0 -z-10">
+    <div class="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl"
+         style="background: rgba(0,113,227,0.1);"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl"
+         style="background: rgba(0,113,227,0.05);"></div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-6 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <!-- Left Content -->
+      <div class="space-y-8">
+        <div>
+          <h1
+            id="hero-title"
+            class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight"
+            style="opacity: 0; transform: translateY(30px);"
+          >
+            <span class="block">Ciao, sono</span>
+            <span class="block" style="color: var(--color-accent);">Jasser</span>
+          </h1>
+        </div>
+
+        <p
+          id="hero-subtitle"
+          class="text-lg md:text-xl max-w-md leading-relaxed"
+          style="opacity: 0; transform: translateY(20px); color: var(--color-text-secondary);"
+        >
+          {settings.description}
+        </p>
+
+        <div id="hero-buttons" class="flex flex-col sm:flex-row gap-4"
+             style="opacity: 0; transform: translateY(20px);">
+          <a
+            href="#projects"
+            class="px-8 py-4 rounded-lg font-medium text-center text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            style="background: var(--color-accent);"
+          >
+            Esplora i Progetti
+          </a>
+          <a
+            href="#contact"
+            class="px-8 py-4 rounded-lg font-medium text-center transition-all duration-300 hover:scale-105"
+            style="border: 2px solid var(--color-accent); color: var(--color-accent);"
+          >
+            Contattami
+          </a>
+        </div>
+
+        <div id="hero-stats" class="grid grid-cols-3 gap-6 pt-8"
+             style="opacity: 0; transform: translateY(20px);">
+          <div>
+            <p class="text-3xl font-bold" style="color: var(--color-accent);">{settings.projectsCount}+</p>
+            <p class="text-sm" style="color: var(--color-text-secondary);">Progetti</p>
+          </div>
+          <div>
+            <p class="text-3xl font-bold" style="color: var(--color-accent);">{settings.experienceYears}+</p>
+            <p class="text-sm" style="color: var(--color-text-secondary);">Anni Exp.</p>
+          </div>
+          <div>
+            <p class="text-3xl font-bold" style="color: var(--color-accent);">{settings.languagesCount}</p>
+            <p class="text-sm" style="color: var(--color-text-secondary);">Lingue</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Content: 3D on desktop, animated card on mobile -->
+      <div class="flex justify-center">
+        <!-- 3D Model: visible on large screens -->
+        <div class="hidden lg:block w-full">
+          <div class="relative">
+            <div class="absolute inset-0 rounded-2xl blur-3xl"
+                 style="background: linear-gradient(135deg, rgba(0,113,227,0.2) 0%, transparent 100%);"></div>
+            <div class="relative h-96 rounded-2xl overflow-hidden">
+              <ToothModel client:load />
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile fallback: animated profile card -->
+        <div class="lg:hidden">
+          <div class="relative w-64 h-64 mx-auto">
+            <div class="absolute inset-0 rounded-full blur-3xl animate-pulse"
+                 style="background: rgba(0,113,227,0.2);"></div>
+            <div class="relative w-64 h-64 rounded-2xl card flex flex-col items-center justify-center gap-4 animate-float">
+              <div class="text-7xl">🦷</div>
+              <div class="text-center">
+                <p class="font-bold text-lg">Jasser H.H.</p>
+                <p class="text-sm" style="color: var(--color-text-secondary);">Odontotecnico & Dev</p>
+              </div>
+              <div class="flex gap-2">
+                {['🌐', '🐍', '🎨'].map(emoji => (
+                  <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm"
+                        style="background: rgba(0,113,227,0.1);">{emoji}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 animate-bounce-slow">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+         style="color: var(--color-accent);">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+    </svg>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+
+  gsap.set('#hero-subtitle', { opacity: 0, y: 20 });
+  gsap.set('#hero-buttons', { opacity: 0, y: 20 });
+  gsap.set('#hero-stats', { opacity: 0, y: 20 });
+
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+  tl.to('#hero-title',    { duration: 0.8, y: 0, opacity: 1 }, 0)
+    .to('#hero-subtitle', { duration: 0.8, opacity: 1, y: 0 }, 0.25)
+    .to('#hero-buttons',  { duration: 0.8, opacity: 1, y: 0 }, 0.45)
+    .to('#hero-stats',    { duration: 0.8, opacity: 1, y: 0 }, 0.65);
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = (this as HTMLAnchorElement).getAttribute('href');
+      const target = href ? document.querySelector(href) : null;
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>

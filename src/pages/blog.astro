@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+function parseMarkdownFrontmatter(content: string) {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const data: Record<string, string> = {};
+  match[1].split('\n').forEach(line => {
+    const idx = line.indexOf(':');
+    if (idx > -1) {
+      data[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    }
+  });
+  return data;
+}
+
+const dir = join(process.cwd(), 'src/data/blog');
+const posts = readdirSync(dir)
+  .filter(f => f.endsWith('.md'))
+  .map(file => {
+    const content = readFileSync(join(dir, file), 'utf-8');
+    const data = parseMarkdownFrontmatter(content);
+    return data ? { ...data, slug: file.replace('.md', '') } : null;
+  })
+  .filter(Boolean)
+  .sort((a, b) => new Date(b!.date).getTime() - new Date(a!.date).getTime());
+
+// Get all categories with counts
+const categories = [...new Set(posts.map(p => p!.category))];
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('it-IT', {
+    day: 'numeric', month: 'long', year: 'numeric'
+  });
+}
+---
+
+<Layout title="Blog - Jasser Haj Hassiene">
+  <main class="pt-32 pb-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <!-- Page Header -->
+      <div class="mb-16">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4">Blog</h1>
+        <p class="text-lg max-w-2xl" style="color: var(--color-text-secondary);">
+          Articoli, tutorial e riflessioni sul digitale, il design e la programmazione.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+          {posts.map(post => (
+            <article class="mb-12 pb-12" style="border-bottom: 1px solid var(--color-border);">
+              <div class="mb-4">
+                <span class="text-xs px-3 py-1 rounded-full font-medium"
+                      style="background: rgba(0,113,227,0.1); color: var(--color-accent);">
+                  {post!.category}
+                </span>
+              </div>
+              <h2 class="text-3xl font-bold mb-2 hover:opacity-70 transition-opacity">
+                <a href={`/blog/${post!.slug}`}>{post!.title}</a>
+              </h2>
+              <div class="flex items-center gap-4 text-sm mb-4" style="color: var(--color-text-secondary);">
+                <span>{formatDate(post!.date)}</span>
+                <span>•</span>
+                <span>{post!.readTime} min di lettura</span>
+              </div>
+              <p class="mb-4" style="color: var(--color-text-secondary);">{post!.description}</p>
+              <a href={`/blog/${post!.slug}`} class="text-sm font-medium" style="color: var(--color-accent);">
+                Leggi l'articolo →
+              </a>
+            </article>
+          ))}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1 space-y-8">
+          <!-- Categories -->
+          <div class="card">
+            <h3 class="text-lg font-bold mb-4">Categorie</h3>
+            <ul class="space-y-2">
+              {categories.map(cat => {
+                const count = posts.filter(p => p!.category === cat).length;
+                return (
+                  <li>
+                    <span class="flex justify-between text-sm">
+                      <span style="color: var(--color-accent);">{cat}</span>
+                      <span style="color: var(--color-text-secondary);">({count})</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <!-- Recent Articles -->
+          <div class="card">
+            <h3 class="text-lg font-bold mb-4">Articoli Recenti</h3>
+            <ul class="space-y-4">
+              {posts.slice(0, 4).map(post => (
+                <li>
+                  <a href={`/blog/${post!.slug}`} class="text-sm" style="color: var(--color-text);">
+                    {post!.title}
+                  </a>
+                  <p class="text-xs mt-1" style="color: var(--color-text-secondary);">
+                    {formatDate(post!.date)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Subscribe CTA -->
+          <div class="card text-center" style="background: linear-gradient(135deg, rgba(0,113,227,0.1) 0%, rgba(0,113,227,0.05) 100%);">
+            <h3 class="font-bold mb-2">Rimani Aggiornato</h3>
+            <p class="text-sm mb-4" style="color: var(--color-text-secondary);">
+              Nuovi articoli ogni settimana su web, design e Python.
+            </p>
+            <a href="/#contact"
+               class="inline-block px-4 py-2 rounded-lg text-sm font-medium text-white transition-all hover:opacity-90"
+               style="background: var(--color-accent);">
+              Contattami
+            </a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</Layout>

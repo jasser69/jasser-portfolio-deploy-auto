@@ -1,0 +1,98 @@
+---
+// Featured Projects — dati caricati dai file .md in src/data/projects/
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+function parseMarkdownFrontmatter(content: string) {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const raw = match[1];
+  const data: Record<string, string | string[]> = {};
+  
+  let inTags = false;
+  raw.split('\n').forEach(line => {
+    if (line.startsWith('tags:')) { inTags = true; data['tags'] = []; return; }
+    if (inTags && line.startsWith('  - ')) {
+      (data['tags'] as string[]).push(line.replace('  - ', '').trim());
+      return;
+    }
+    if (line.trim() !== '' && !line.startsWith('  - ')) {
+      inTags = false;
+    }
+    const idx = line.indexOf(':');
+    if (idx > -1) {
+      const key = line.slice(0, idx).trim();
+      const val = line.slice(idx + 1).trim();
+      data[key] = val;
+    }
+  });
+  return data;
+}
+
+const dir = join(process.cwd(), 'src/data/projects');
+const allProjects = readdirSync(dir)
+  .filter(f => f.endsWith('.md'))
+  .map(file => {
+    const content = readFileSync(join(dir, file), 'utf-8');
+    const data = parseMarkdownFrontmatter(content);
+    return data;
+  })
+  .filter(Boolean)
+  .slice(0, 3); // Solo i primi 3 in homepage
+
+const emojis: Record<string, string> = {
+  web: '🌐',
+  python: '🐍',
+  design: '🎨',
+};
+---
+
+<section id="projects" class="py-20" style="background: var(--color-bg-secondary);">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <div class="mb-16 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">Progetti in Evidenza</h2>
+      <p class="text-lg max-w-2xl mx-auto" style="color: var(--color-text-secondary);">
+        Una selezione dei miei lavori più recenti e significativi nel digitale e nel design.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      {allProjects.map(project => (
+        <div class="group card hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer">
+          <div class="h-48 rounded-lg mb-4 flex items-center justify-center overflow-hidden"
+               style="background: linear-gradient(135deg, rgba(0,113,227,0.2) 0%, rgba(0,113,227,0.05) 100%);">
+            <div class="text-6xl group-hover:scale-110 transition-transform duration-300">
+              {emojis[project!.category as string] ?? '💡'}
+            </div>
+          </div>
+          <h3 class="text-xl font-bold mb-2">{project!.title}</h3>
+          <p class="text-sm mb-4" style="color: var(--color-text-secondary);">{project!.description}</p>
+          <div class="flex gap-2 mb-4 flex-wrap">
+            {(project!.tags as string[]).map(tag => (
+              <span class="text-xs px-3 py-1 rounded-full font-medium"
+                    style="background: rgba(0,113,227,0.1); color: var(--color-accent);">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <a href="/projects" class="text-sm font-medium" style="color: var(--color-accent);">
+            Scopri di più →
+          </a>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center">
+      <a
+        href="/projects"
+        class="inline-block px-8 py-4 rounded-lg font-medium transition-all duration-300 hover:text-white"
+        style="border: 2px solid var(--color-accent); color: var(--color-accent);"
+        onmouseover="this.style.background='var(--color-accent)'; this.style.color='white';"
+        onmouseout="this.style.background=''; this.style.color='var(--color-accent)';"
+      >
+        Vedi Tutti i Progetti
+      </a>
+    </div>
+  </div>
+</section>

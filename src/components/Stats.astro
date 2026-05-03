@@ -1,0 +1,67 @@
+---
+import settings from '../data/settings.json';
+---
+
+<section class="py-20" style="background: var(--color-bg);">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <!-- Stat 1 -->
+      <div class="text-center">
+        <div class="mb-4 flex justify-center">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center"
+               style="background: rgba(0,113,227,0.1);">
+            <p class="text-4xl font-bold" id="stat-projects" data-value={settings.projectsCount}
+               style="color: var(--color-accent);">0</p>
+          </div>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Progetti</h3>
+        <p class="text-sm" style="color: var(--color-text-secondary);">Completati con successo</p>
+      </div>
+
+      <!-- Stat 2 -->
+      <div class="text-center">
+        <div class="mb-4 flex justify-center">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center"
+               style="background: rgba(0,113,227,0.1);">
+            <p class="text-4xl font-bold" id="stat-languages" data-value={settings.languagesCount}
+               style="color: var(--color-accent);">0</p>
+          </div>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Lingue</h3>
+        <p class="text-sm" style="color: var(--color-text-secondary);">Parlate fluentemente</p>
+      </div>
+
+      <!-- Stat 3 -->
+      <div class="text-center">
+        <div class="mb-4 flex justify-center">
+          <div class="w-24 h-24 rounded-full flex items-center justify-center"
+               style="background: rgba(0,113,227,0.1);">
+            <p class="text-4xl font-bold" id="stat-experience" data-value={settings.experienceYears}
+               style="color: var(--color-accent);">0</p>
+          </div>
+        </div>
+        <h3 class="text-xl font-bold mb-2">Anni</h3>
+        <p class="text-sm" style="color: var(--color-text-secondary);">Di esperienza digitale</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  ['stat-projects', 'stat-languages', 'stat-experience'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const value = parseInt(el.getAttribute('data-value') || '0', 10);
+    gsap.to(el, {
+      textContent: value,
+      duration: 2,
+      ease: 'power2.out',
+      snap: { textContent: 1 },
+      scrollTrigger: { trigger: el, start: 'top 80%', once: true },
+    });
+  });
+</script>

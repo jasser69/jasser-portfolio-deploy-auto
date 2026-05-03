@@ -1,0 +1,139 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+
+function parseMarkdownFrontmatter(content: string) {
+  const match = content.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const raw = match[1];
+  const data: Record<string, string | string[]> = {};
+  let inTags = false;
+  raw.split('\n').forEach(line => {
+    if (line.startsWith('tags:')) { inTags = true; data['tags'] = []; return; }
+    if (inTags && line.startsWith('  - ')) {
+      (data['tags'] as string[]).push(line.replace('  - ', '').trim());
+      return;
+    }
+    if (line.trim() !== '' && !line.startsWith('  - ')) {
+      inTags = false;
+    }
+    const idx = line.indexOf(':');
+    if (idx > -1) {
+      data[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    }
+  });
+  return data;
+}
+
+const dir = join(process.cwd(), 'src/data/projects');
+const projects = readdirSync(dir)
+  .filter(f => f.endsWith('.md'))
+  .map(file => parseMarkdownFrontmatter(readFileSync(join(dir, file), 'utf-8')))
+  .filter(Boolean);
+
+const emojis: Record<string, string> = { web: '🌐', python: '🐍', design: '🎨' };
+---
+
+<Layout title="Progetti - Jasser Haj Hassiene">
+  <main class="pt-32 pb-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <!-- Page Header -->
+      <div class="mb-16">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4">Tutti i Progetti</h1>
+        <p class="text-lg max-w-2xl" style="color: var(--color-text-secondary);">
+          Una raccolta completa dei miei lavori nel digitale, dal web design all'automazione con Python.
+        </p>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="mb-12 flex flex-wrap gap-3">
+        <button class="filter-btn px-6 py-2 rounded-full font-medium transition-all" data-filter="all"
+                style="border: 2px solid var(--color-accent); color: var(--color-accent);">
+          Tutti ({projects.length})
+        </button>
+        {['web', 'python', 'design'].map(cat => {
+          const count = projects.filter(p => p!.category === cat).length;
+          return count > 0 ? (
+            <button class="filter-btn px-6 py-2 rounded-full font-medium transition-all" data-filter={cat}
+                    style="border: 2px solid var(--color-border); color: var(--color-text);">
+              {cat === 'web' ? 'Web Design' : cat === 'python' ? 'Python' : 'Design'} ({count})
+            </button>
+          ) : null;
+        })}
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+        {projects.map(project => (
+          <div class="project-card card hover:scale-105 transition-all duration-300 cursor-pointer"
+               data-category={project!.category}>
+            <div class="h-48 rounded-lg mb-4 flex items-center justify-center"
+                 style="background: linear-gradient(135deg, rgba(0,113,227,0.2) 0%, rgba(0,113,227,0.05) 100%);">
+              <div class="text-6xl">{emojis[project!.category as string] ?? '💡'}</div>
+            </div>
+            <h3 class="text-xl font-bold mb-2">{project!.title}</h3>
+            <p class="text-sm mb-4" style="color: var(--color-text-secondary);">{project!.description}</p>
+            <div class="flex gap-2 flex-wrap mb-4">
+              {(project!.tags as string[]).map(tag => (
+                <span class="text-xs px-3 py-1 rounded-full font-medium"
+                      style="background: rgba(0,113,227,0.1); color: var(--color-accent);">{tag}</span>
+              ))}
+            </div>
+            {project!.link && project!.link !== '' ? (
+              <a href={project!.link as string} target="_blank" rel="noopener noreferrer"
+                 class="text-sm font-medium" style="color: var(--color-accent);">
+                Vedi Progetto →
+              </a>
+            ) : (
+              <span class="text-sm" style="color: var(--color-text-secondary);">In sviluppo...</span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="hidden text-center py-20">
+        <p class="text-lg" style="color: var(--color-text-secondary);">Nessun progetto trovato in questa categoria.</p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.project-card') as NodeListOf<HTMLElement>;
+  const emptyState = document.getElementById('empty-state');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = (btn as HTMLElement).dataset.filter;
+
+      // Update button styles
+      filterBtns.forEach(b => {
+        (b as HTMLElement).style.borderColor = 'var(--color-border)';
+        (b as HTMLElement).style.color = 'var(--color-text)';
+        (b as HTMLElement).style.background = '';
+      });
+      (btn as HTMLElement).style.borderColor = 'var(--color-accent)';
+      (btn as HTMLElement).style.color = 'var(--color-accent)';
+
+      // Filter cards
+      let visible = 0;
+      projectCards.forEach(card => {
+        const show = filter === 'all' || card.dataset.category === filter;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      if (emptyState) emptyState.classList.toggle('hidden', visible > 0);
+    });
+  });
+
+  // Init: mark "Tutti" as active
+  const allBtn = document.querySelector('[data-filter="all"]') as HTMLElement;
+  if (allBtn) {
+    allBtn.style.borderColor = 'var(--color-accent)';
+    allBtn.style.color = 'var(--color-accent)';
+  }
+</script>

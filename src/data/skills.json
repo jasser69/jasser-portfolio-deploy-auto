@@ -1,0 +1,32 @@
+[
+  {
+    "category": "Web Development",
+    "icon": "💻",
+    "items": ["HTML5 & CSS3", "JavaScript (ES6+)", "Astro & Tailwind CSS", "React & JSX", "Responsive Design"]
+  },
+  {
+    "category": "Python",
+    "icon": "🐍",
+    "items": ["Scripting & Automation", "Data Analysis (Pandas)", "Web Scraping", "Visualizzazione (Matplotlib)", "Best Practices"]
+  },
+  {
+    "category": "Design & Creative",
+    "icon": "🎨",
+    "items": ["Canva Pro", "Graphic Design", "Social Media Content", "UI/UX Principles", "Brand Identity"]
+  },
+  {
+    "category": "Lingue",
+    "icon": "🌍",
+    "items": ["Italiano (Nativo)", "Arabo (Fluente)", "Francese (Intermedio)", "Inglese (Intermedio)"]
+  },
+  {
+    "category": "Tools & Platforms",
+    "icon": "🛠️",
+    "items": ["Git & GitHub", "VS Code", "Figma", "Netlify & Vercel", "Terminal/CLI"]
+  },
+  {
+    "category": "Soft Skills",
+    "icon": "🤝",
+    "items": ["Problem Solving", "Team Collaboration", "Communication", "Time Management", "Continuous Learning"]
+  }
+]
