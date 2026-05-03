@@ -1,11 +1,9 @@
-# Decap CMS Configuration
-# Backend: GitHub OAuth per Vercel
+# Netlify CMS Configuration
+# Backend: Netlify (con Git Gateway)
 
 backend:
-  name: github
-  repo: jasser69/jasser-portfolio-deploy-auto
+  name: git-gateway
   branch: main
-  auth_endpoint: api/auth
   commit_messages:
     create: 'Create {{collection}} "{{slug}}"'
     update: 'Update {{collection}} "{{slug}}"'
@@ -17,7 +15,6 @@ media_folder: src/assets/images
 public_path: /src/assets/images
 publish_mode: simple
 
-# Disabilita Netlify Identity
 site_url: https://jasser-portfolio-deploy.vercel.app
 logo_url: https://jasser-portfolio-deploy.vercel.app/favicon.svg
 
